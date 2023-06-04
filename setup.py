@@ -22,16 +22,17 @@ setup(
         'numpy',
         'pytest',
         'myst-nb',
-        'sphinx_rtd_theme',
-        'sphinx-copybutton',
-        'sphinx-autoapi',
-        'numpydoc',
-        'gitpython',
-        'sphinxcontrib-collections @ git+https://github.com/anugrahjo/sphinx-collections.git', # 'sphinx-collections',
-        'sphinxcontrib-bibtex',
-        'setuptools',
-        'wheel',
-        'twine',
+    #     'sphinx_rtd_theme',
+    #     'sphinx-copybutton',
+    #     'sphinx-autoapi',
+    #     'numpydoc',
+    #     'gitpython',
+    #     # 'sphinxcontrib-collections @ git+https://github.com/anugrahjo/sphinx-collections.git', # 
+    #     'sphinx-collections',
+    #     'sphinxcontrib-bibtex',
+    #     'setuptools',
+    #     'wheel',
+    #     'twine',
     ],
     classifiers=[
         'Programming Language :: Python',
@@ -49,4 +50,8 @@ setup(
         'Topic :: Software Development :: Testing',
         'Topic :: Software Development :: Libraries',
     ],
+    entry_points="""
+        [console_scripts]
+        lsdo_test=lsdo_test.main:lsdo_test_command
+    """,
 )
