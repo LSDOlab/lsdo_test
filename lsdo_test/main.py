@@ -65,7 +65,7 @@ def _read_ipynb_file(rel_file_path):
         for line in cell['source']:
             # Don't add markdown lines
             if cell['cell_type'] == 'markdown':
-                if not line[:5] == '##tut' and not line[:4] == '##ex':
+                if not line[:5] == '##tu' and not line[:4] == '##ex':
                     break
             
             lines.append(line.replace('\n', ''))
@@ -193,7 +193,7 @@ def lsdo_test_command():
         _write_file(new_lines, build_dir / rel_file_path)
 
     # Process example/tutorial files
-    for script_type in ['ex', 'tut']:
+    for script_type in ['ex', 'tu']:
         for extension_type in ['py', 'ipynb']:
             for rel_dir_path, file_name in _get_rel_paths_and_names(
                 '**/{}_*.{}'.format(script_type, extension_type)
