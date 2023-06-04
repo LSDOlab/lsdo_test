@@ -209,7 +209,7 @@ def lsdo_test_command():
 
                 # Look for directive
                 for old_line in old_lines:
-                    script_tags, directive_index = _get_script_tags(old_line, '##{}'.format(script_type), old_rel_file_path)
+                    script_tags, directive_index = _get_script_tags(old_line, '##test', old_rel_file_path)
 
                     # Directive found---break with this tags value
                     if script_tags:

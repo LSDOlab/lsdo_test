@@ -1,4 +1,4 @@
-##ex my_examples
+##skip
 
 """
 This is a sample "example" script for SciPy's LU solver.

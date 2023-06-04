@@ -1,4 +1,4 @@
-##ex my_examples trig_functions
+##test my_examples trig_functions
 
 """
 This is a sample "example" script for SciPy's LU solver.
