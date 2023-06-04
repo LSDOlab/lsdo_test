@@ -73,7 +73,7 @@ def _read_ipynb_file(rel_file_path):
     return lines
 
 
-def _get_tags(line, directive, rel_file_path):
+def _get_script_tags(line, directive, rel_file_path):
     """
     Search the given line of code for the directive.
 
@@ -86,7 +86,7 @@ def _get_tags(line, directive, rel_file_path):
 
     Returns
     -------
-    tags : list of str or None
+    script_tags : list of str or None
         None if directive not found; or list of tags as strings.
     """
     directive_index = line.find(directive)
@@ -95,26 +95,26 @@ def _get_tags(line, directive, rel_file_path):
         return None, directive_index
     # Directive found
     else:
-        tags = line[directive_index:].split(' ')
+        script_tags = line[directive_index:].split(' ')
         # Directive is in the string, but it is not followed by an empty space or new line
-        if tags[0] != directive:
+        if script_tags[0] != directive:
             raise Exception('In file {}, {} is invalid'.format(rel_file_path, directive))
-        # Return the tags
+        # Return the script_tags
         else:
-            return tags[1:], directive_index
+            return script_tags[1:], directive_index
 
 
-def _is_match(tags, command_tags):
+def _is_match(script_tags, command_prompt_tags):
     """
-    Return a boolean whether there is a match between any test tag and any command-line tag.
+    Return a boolean whether there is a match between any script tag and any command-line tag.
     """
     # Assume no match, unless '*' is in the command-line tags
-    match = '*' in command_tags
+    match = '*' in command_prompt_tags
 
     # Search for a match between any command-line tag and any tag in the current test
-    for command_tag in command_tags:
-        for tag in tags:
-            if fnmatch.fnmatch(tag, command_tag):
+    for command_prompt_tag in command_prompt_tags:
+        for script_tag in script_tags:
+            if fnmatch.fnmatch(script_tag, command_prompt_tag):
                 match = True
     return match
 
@@ -132,10 +132,13 @@ def _convert_to_test(old_lines):
 
 
 def lsdo_test_command():
+    """
+    The function that is called when 'lsdo_test' is run at a command prompt (Terminal)
+    """
 
     # Parse command line arguments
     parser = argparse.ArgumentParser(
-        prog='LSDOTest',
+        prog='lsdo_test',
         description=description,
     )
     parser.add_argument(
@@ -152,7 +155,7 @@ def lsdo_test_command():
         help='Keep (do not delete) generated pytest files',
     )
     args = parser.parse_args()
-    command_tags = args.tags
+    command_prompt_tags = args.tags
 
     # If the build directory exists, delete it
     if build_dir.is_dir():
@@ -171,15 +174,15 @@ def lsdo_test_command():
         
         new_lines.append('')
         for old_line in old_lines:
-            tags, directive_index = _get_tags(old_line, '##test', rel_file_path)
+            script_tags, directive_index = _get_script_tags(old_line, '##test', rel_file_path)
 
             # No directive in this line
-            if tags is None:
+            if script_tags is None:
                 new_line = old_line
             # The directive was found in this line
             else:
                 # There is a match---run the test
-                if _is_match(tags, command_tags):
+                if _is_match(script_tags, command_prompt_tags):
                     new_line = old_line
                 # Skip the test
                 else:
@@ -206,17 +209,17 @@ def lsdo_test_command():
 
                 # Look for directive
                 for old_line in old_lines:
-                    tags, directive_index = _get_tags(old_line, '##{}'.format(script_type), old_rel_file_path)
+                    script_tags, directive_index = _get_script_tags(old_line, '##{}'.format(script_type), old_rel_file_path)
 
                     # Directive found---break with this tags value
-                    if tags:
+                    if script_tags:
                         break
                 # No directive found---accept as no tag
                 else:
-                    tags = []
+                    script_tags = []
 
                 # There is a match---encapsulate in test function, rename to a test file
-                if _is_match(tags, command_tags):
+                if _is_match(script_tags, command_prompt_tags):
                     new_lines = list()
                     new_lines.append('import warnings')
                     new_lines.append('warnings.filterwarnings("ignore")')

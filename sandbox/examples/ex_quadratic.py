@@ -47,6 +47,7 @@ sol = spla.lu_solve((lu, piv), rhs)
 
 
 # Plot the quadratic function and the linear fit
+
 plt.plot(x, y, label='Quadratic function')
 plt.plot(x, lsq_mtx @ sol, label='Linear fit')
 plt.legend()
