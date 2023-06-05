@@ -1,13 +1,10 @@
-# Welcome to lsdo_project_template
+# Welcome to the software documentation for lsdo_test
 
 ![alt text](/src/images/lsdolab.png "Title displayed")
 
-This page describes conceptually the purpose of your package at a high-level.
-Start with a one sentence description of your package.
-For example, "This repository serves as a template for all LSDOlab projects with regard to documentation, testing and hosting of open-source code."
-Include figures from the relevant paper and citation.
+The lsdo_test package provides a Python testing framework that builds on `pytest` and adds (1) testing of run scripts (examples and tutorials) and (2) tags for tests.
 
-# Cite us
+<!-- # Cite us
 ```none
 @article{lsdo2023,
         Author = { Author 1, Author 2, and Author 3},
@@ -18,7 +15,7 @@ Include figures from the relevant paper and citation.
         issn = {0123-4567},
         doi = {https://doi.org/}
         }
-```
+``` -->
 
 <!-- Remove/add custom pages from/to toc as per your package's requirement -->
 

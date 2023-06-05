@@ -131,6 +131,12 @@ def _convert_to_test(old_lines):
     return new_lines
 
 
+def _print_found(rel_file_path, script_tags, will_run):
+    print('Found file: {}'.format(rel_file_path))
+    print('    Tags: {}'.format(' '.join(script_tags)))
+    print('    Will be run: {}'.format(will_run))
+
+
 def lsdo_test_command():
     """
     The function that is called when 'lsdo_test' is run at a command prompt (Terminal)
@@ -154,8 +160,13 @@ def lsdo_test_command():
         '-k', '--keep', default=False, action='store_true', 
         help='Keep (do not delete) generated pytest files',
     )
+    parser.add_argument(
+        '-l', '--list', default=False, action='store_true', 
+        help='List all files found, their tags, and whether they will be run',
+    )
     args = parser.parse_args()
     command_prompt_tags = args.tags
+    list_files = args.list
 
     # If the build directory exists, delete it
     if build_dir.is_dir():
@@ -181,12 +192,16 @@ def lsdo_test_command():
                 new_line = old_line
             # The directive was found in this line
             else:
+                match = _is_match(script_tags, command_prompt_tags)
                 # There is a match---run the test
-                if _is_match(script_tags, command_prompt_tags):
+                if match:
                     new_line = old_line
                 # Skip the test
                 else:
                     new_line = old_line[:directive_index] + '@pytest.mark.skip()'
+
+                if list_files:
+                    _print_found(rel_file_path, script_tags, match)
 
             new_lines.append(new_line)
 
@@ -218,8 +233,10 @@ def lsdo_test_command():
                 else:
                     script_tags = []
 
+                match = _is_match(script_tags, command_prompt_tags)
+
                 # There is a match---encapsulate in test function, rename to a test file
-                if _is_match(script_tags, command_prompt_tags):
+                if match:
                     new_lines = list()
                     new_lines.append('import warnings')
                     new_lines.append('warnings.filterwarnings("ignore")')
@@ -228,6 +245,9 @@ def lsdo_test_command():
                     new_lines.extend(_convert_to_test(old_lines))
 
                     _write_file(new_lines, build_dir / new_rel_file_path)
+                    
+                if list_files:
+                    _print_found(old_rel_file_path, script_tags, match)
 
     pytest.main([build_dir])
 
