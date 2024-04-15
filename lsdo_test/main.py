@@ -65,7 +65,7 @@ def _read_ipynb_file(rel_file_path):
         for line in cell['source']:
             # Don't add markdown lines
             if cell['cell_type'] == 'markdown':
-                if not line[:5] == '##tu' and not line[:4] == '##ex':
+                if not line[:6] == '##test':
                     break
             
             lines.append(line.replace('\n', ''))
@@ -116,6 +116,10 @@ def _is_match(script_tags, command_prompt_tags):
         for script_tag in script_tags:
             if fnmatch.fnmatch(script_tag, command_prompt_tag):
                 match = True
+
+    if command_prompt_tags == '' and script_tags == []:
+        match = True
+
     return match
 
 
@@ -131,8 +135,10 @@ def _convert_to_test(old_lines):
     return new_lines
 
 
-def _print_found(rel_file_path, script_tags, will_run):
+def _print_found(rel_file_path, script_tags, will_run, line_number=None):
     print('Found file: {}'.format(rel_file_path))
+    if line_number is not None:
+        print('    Line number: {}'.format(line_number))
     print('    Tags: {}'.format(' '.join(script_tags)))
     print('    Will be run: {}'.format(will_run))
 
@@ -184,7 +190,7 @@ def lsdo_test_command():
         new_lines.append('import pytest')
         
         new_lines.append('')
-        for old_line in old_lines:
+        for line_number, old_line in enumerate(old_lines):
             script_tags, directive_index = _get_script_tags(old_line, '##test', rel_file_path)
 
             # No directive in this line
@@ -201,7 +207,7 @@ def lsdo_test_command():
                     new_line = old_line[:directive_index] + '@pytest.mark.skip()'
 
                 if list_files:
-                    _print_found(rel_file_path, script_tags, match)
+                    _print_found(rel_file_path, script_tags, match, line_number=line_number + 2)
 
             new_lines.append(new_line)
 
@@ -227,13 +233,22 @@ def lsdo_test_command():
                     script_tags, directive_index = _get_script_tags(old_line, '##test', old_rel_file_path)
 
                     # Directive found---break with this tags value
-                    if script_tags:
+                    if script_tags is not None:
                         break
                 # No directive found---accept as no tag
                 else:
                     script_tags = []
 
                 match = _is_match(script_tags, command_prompt_tags)
+
+                # Look for ##skip directive
+                for old_line in old_lines:
+                    script_tags_skip, directive_index = _get_script_tags(old_line, '##skip', old_rel_file_path)
+
+                    # ##skip directive found---break with this tags value
+                    if script_tags_skip is not None:
+                        match = False
+                        break
 
                 # There is a match---encapsulate in test function, rename to a test file
                 if match:
