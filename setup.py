@@ -20,6 +20,7 @@ setup(
     platforms=['any'],
     install_requires=[
         'numpy',
+        'scipy',
         'pytest',
         'myst-nb',
     #     'sphinx_rtd_theme',
